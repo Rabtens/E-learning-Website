@@ -1,53 +1,71 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: ''
+  });
 
-  const handleSubmit = (e) => {
+  const { name, email, password } = formData;
+
+  const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    // Logic for registration submission
-    console.log({ name, email, password });
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+
+      const body = JSON.stringify({ name, email, password });
+
+      const res = await axios.post('/api/auth/register', body, config);
+
+      console.log('User registered:', res.data);  // This is the response from the server
+    } catch (err) {
+      console.error('Error during registration:', err.response.data);
+    }
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '50px' }}>
+    <form onSubmit={onSubmit}>
       <h1>Register</h1>
-      <form onSubmit={handleSubmit} style={{ display: 'inline-block' }}>
-        <div>
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            style={{ padding: '10px', marginBottom: '10px' }}
-          />
-        </div>
-        <div>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ padding: '10px', marginBottom: '10px' }}
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ padding: '10px', marginBottom: '10px' }}
-          />
-        </div>
-        <button type="submit" style={{ padding: '10px 20px' }}>Register</button>
-      </form>
-    </div>
+      <div>
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={name}
+          onChange={onChange}
+          required
+        />
+      </div>
+      <div>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={email}
+          onChange={onChange}
+          required
+        />
+      </div>
+      <div>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={password}
+          onChange={onChange}
+          required
+        />
+      </div>
+      <button type="submit">Register</button>
+    </form>
   );
 };
 

@@ -1,42 +1,61 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
 
-  const handleSubmit = (e) => {
+  const { email, password } = formData;
+
+  const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    // Logic for login submission
-    console.log({ email, password });
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+
+      const body = JSON.stringify({ email, password });
+
+      const res = await axios.post('/api/auth/login', body, config);
+
+      console.log('Logged in successfully:', res.data);  // Server response contains the JWT token
+      localStorage.setItem('token', res.data.token);  // Store JWT in localStorage
+    } catch (err) {
+      console.error('Login error:', err.response.data);
+    }
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '50px' }}>
+    <form onSubmit={onSubmit}>
       <h1>Login</h1>
-      <form onSubmit={handleSubmit} style={{ display: 'inline-block' }}>
-        <div>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ padding: '10px', marginBottom: '10px' }}
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ padding: '10px', marginBottom: '10px' }}
-          />
-        </div>
-        <button type="submit" style={{ padding: '10px 20px' }}>Login</button>
-      </form>
-    </div>
+      <div>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={email}
+          onChange={onChange}
+          required
+        />
+      </div>
+      <div>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={password}
+          onChange={onChange}
+          required
+        />
+      </div>
+      <button type="submit">Login</button>
+    </form>
   );
 };
 
