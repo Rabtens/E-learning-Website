@@ -4,8 +4,7 @@ require('dotenv').config(); // Load environment variables
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // Remove useNewUrlParser and useUnifiedTopology as they are deprecated
     });
     console.log('MongoDB Connected...');
   } catch (err) {
@@ -15,3 +14,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+ 
